@@ -44,10 +44,10 @@ class Game{
     this.heightCutObj = this.widthPerColumn;
 
     this.fallingObjects = [];
-    this.cutObjects = [];
+    //this.cutObjects = [];
 
     this.createPedestal();
-    //this.createCutBox();
+    this.createCutBox();
     this.listenForPlayerInput();
     this.draw();
     this.showStart();
@@ -121,14 +121,20 @@ class Game{
     }
 
     this.spawnFallObj();
-    this.spawnCutObj();
+    //this.spawnCutObj();
+    this.cutObject.update(secondsPassed);
 
     for(let i = 0; i < this.fallingObjects.length; i++){
       this.fallingObjects[i].update(secondsPassed, this.xStartBox, this.xEndBox);
     }
 
-    for(let i = 0; i < this.cutObjects.length; i++){
-      this.cutObjects[i].update(secondsPassed);
+    // for(let i = 0; i < this.cutObjects.length; i++){
+    //   this.cutObjects[i].update(secondsPassed);
+    // }
+
+    if(this.isDisplayCutBox){
+      this.cutObject.setter(this.xCutObj, this.yCutObj, this.widthCutObj, this.heightCutObj);
+      this.isDisplayCutBox = false;
     }
 
     if(this.fallingObjects.length <= 1 && this.detectRect(this.fallingObjects[0], this.pedestal)){
@@ -195,9 +201,9 @@ class Game{
   draw(){
     this.clear();
     this.pedestal.draw();
-    //this.cutObject.draw();
+    this.cutObject.draw();
     this.fallingObjects.forEach((fallingObject) => fallingObject.draw());
-    this.cutObjects.forEach((fallingObject) => fallingObject.draw());
+    //this.cutObjects.forEach((fallingObject) => fallingObject.draw());
     this.ui.updateGameInfo(this.score, this.time);
   }
 
@@ -212,16 +218,16 @@ class Game{
     this.spawner = false;
   }
 
-  spawnCutObj(){    
-    if(!this.isDisplayCutBox){
-      return;
-    }
+  // spawnCutObj(){    
+  //   if(!this.isDisplayCutBox){
+  //     return;
+  //   }
 
-    this.cutObjects.push(new CutObject(this.context, this.xCutObj, this.yCutObj, this.widthCutObj,
-      this.heightCutObj, 0, 500));
+  //   this.cutObjects.push(new CutObject(this.context, this.xCutObj, this.yCutObj, this.widthCutObj,
+  //     this.heightCutObj, 0, 500));
 
-    this.isDisplayCutBox = false;
-  }
+  //   this.isDisplayCutBox = false;
+  // }
 
   clear(){
     this.context.clearRect(0, 0, this.width, this.height);

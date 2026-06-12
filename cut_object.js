@@ -3,8 +3,16 @@ class CutObject extends GameObject{
     super(context, x, y, width, height, vx, vy);
   }
 
+  setter(x, y, width, height){
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
   update(secondsPassed){
     this.y += this.vy * secondsPassed;
+    console.log(this.y);
   }
 
   draw(){
