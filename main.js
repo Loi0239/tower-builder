@@ -24,10 +24,13 @@ class Game{
     this.ui = new GameUI(canvas);
 
     this.widthPerColumn = this.width/5;
+    this.widthBlock = this.widthPerColumn;
     this.xStartBox = this.widthPerColumn;
     this.xEndBox = this.width - this.widthPerColumn;
     this.oldTimeStamp = 0;
     this.startTime = 0;
+    this.run = false;
+    this.gameOver = false;
     this.spawner = true;
     this.score = 0;
     this.time = 0;
@@ -39,6 +42,7 @@ class Game{
     this.createPedestal();
     this.listenForPlayerInput();
     this.draw();
+    this.showStart();
   }
 
   createPedestal(){
@@ -66,13 +70,15 @@ class Game{
     let secondsPassed = (timeStamp - this.oldTimeStamp)/ 1000;
     secondsPassed = Math.min(secondsPassed, 0.05);
     this.oldTimeStamp = timeStamp;
-    this.time = Math.floor((timeStamp - this.startTime) /1000);
 
-    if(this.startTime === 0 ){
-      this.startTime = timeStamp;
+    if(this.run){
+      if(this.startTime === 0 ){
+        this.startTime = timeStamp;
+      }
+      
+      this.time = Math.floor((timeStamp - this.startTime) /1000);
+      this.update(secondsPassed);
     }
-
-    this.update(secondsPassed);
 
     this.draw();
     window.requestAnimationFrame((nextTimeStamp) => this.gameLoop(nextTimeStamp));
@@ -124,8 +130,41 @@ class Game{
     }
 
     if(this.detectBottom(this.fallingObjects[this.fallingObjects.length - 1])){
-      this.score = -10000;
+      this.gameOver = true;
+      this.showGameOver();
     }
+  }
+
+  start() {
+    this.run = true;
+    this.gameOver = false;
+    this.oldTimeStamp = performance.now();
+    this.ui.hideMessage();
+  }
+
+  restart() {
+    this.widthBlock = this.widthPerColumn;
+    this.score = 0;
+    this.time = 0;
+    this.run = true;
+    this.gameOver = false;
+    this.spawner = true;
+    this.shiftRemaining = 0;
+    this.bounusSpeed = 1;
+    this.fallingObjects = [];
+    this.createPedestal();
+    this.oldTimeStamp = performance.now();
+    this.ui.hideMessage();
+  }
+
+  showStart() {
+    this.ui.showMessage("Catch Objects", "Start", () => this.start(), "Nhấn space để thả khối");
+  }
+
+  showGameOver() {
+    this.run = false;
+    this.gameOver = true;
+    this.ui.showMessage("Game Over", "Restart", () => this.restart(), "Chơi lại nào!!!");
   }
 
   draw(){
@@ -141,14 +180,10 @@ class Game{
     }
 
     this.fallingObjects.push(new FallObject(this.context, this.xStartBox * 2, 0,
-      this.widthPerColumn, this.widthPerColumn, 100 * this.bounusSpeed, 500, 10))
+      this.widthBlock, this.widthPerColumn, 100 * this.bounusSpeed, 500, 10))
     
     this.spawner = false;
   }
-
-  // calcTime(timeStamp){
-  //   this.time = Math.floor(timeStamp - this.startTime);
-  // }
 
   clear(){
     this.context.clearRect(0, 0, this.width, this.height);
@@ -165,26 +200,11 @@ class Game{
   }
 
   cutBox(obj1, obj2){
-    let dist = 0;
-    if(obj1.x > obj2.x){
-      dist = obj1.x - obj2.x;
-      if(obj2.width === this.widthPerColumn){
-        obj1.width = this.widthPerColumn - dist;
-      }else{
-        obj1.width = obj2.width - dist;
-      }
-    }
-    
-    
+    let dist = Math.abs(obj1.x - obj2.x);
     if(obj1.x < obj2.x){
-      let checkWidth = (obj1.x + obj1.width) <= (obj2.x + obj2.width)
-      dist = obj2.x - obj1.x;
       obj1.x += dist;
-      if(checkWidth){
-        obj1.width = this.widthPerColumn - dist;
-      }else{
-        obj1.width = obj2.width;
-      }
     }
+    obj1.width = obj2.width - dist;
+    this.widthBlock = obj1.width;
   }
 }

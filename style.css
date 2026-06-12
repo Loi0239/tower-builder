@@ -60,3 +60,59 @@ canvas {
     background: #0f172a;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
 }
+
+.game-panel {
+    position: absolute;
+    left: 50%;
+    top: calc((100% - 58px) / 2);
+    width: min(68%, 520px);
+    min-height: 158px;
+    padding: 12px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    border: 2px solid rgba(125, 211, 252, 0.65);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.9);
+    transform: translate(-50%, -50%);
+}
+
+.game-title {
+    margin: 0;
+    color: #f8fafc;
+    font: bold 26px Arial, sans-serif;
+    text-align: center;
+}
+
+.game-des {
+    margin: 0;
+    color: #c5c5c6;
+    font: bold 14px Arial, sans-serif;
+    text-align: center;
+}
+
+.game-button {
+    width: 160px;
+    height: 44px;
+    border: 0;
+    border-radius: 8px;
+    background: #38bdf8;
+    color: #0f172a;
+    cursor: pointer;
+    font: bold 18px Arial, sans-serif;
+    box-shadow: 0 10px 24px rgba(56, 189, 248, 0.35);
+}
+
+.game-button:hover {
+    background: #7dd3fc;
+}
+
+.game-button:active {
+    transform: translateY(2px);
+}
+
+.hidden {
+    display: none;
+}
