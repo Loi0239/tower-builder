@@ -37,9 +37,17 @@ class Game{
     this.shiftRemaining = 0;
     this.bounusSpeed = 1;
 
+    this.isDisplayCutBox = false;
+    this.xCutObj = 0;
+    this.yCutObj = 0;
+    this.widthCutObj = 0;
+    this.heightCutObj = this.widthPerColumn;
+
     this.fallingObjects = [];
+    this.cutObjects = [];
 
     this.createPedestal();
+    //this.createCutBox();
     this.listenForPlayerInput();
     this.draw();
     this.showStart();
@@ -55,6 +63,18 @@ class Game{
       200,
       200,
       10,
+    )
+  }
+
+  createCutBox(){
+    this.cutObject = new CutObject(
+      this.context,
+      this.xCutObj, 
+      this.yCutObj, 
+      this.widthCutObj,
+      this.heightCutObj, 
+      0, 
+      500
     )
   }
 
@@ -79,7 +99,7 @@ class Game{
       this.time = Math.floor((timeStamp - this.startTime) /1000);
       this.update(secondsPassed);
     }
-
+    
     this.draw();
     window.requestAnimationFrame((nextTimeStamp) => this.gameLoop(nextTimeStamp));
   }
@@ -101,9 +121,14 @@ class Game{
     }
 
     this.spawnFallObj();
+    this.spawnCutObj();
 
     for(let i = 0; i < this.fallingObjects.length; i++){
       this.fallingObjects[i].update(secondsPassed, this.xStartBox, this.xEndBox);
+    }
+
+    for(let i = 0; i < this.cutObjects.length; i++){
+      this.cutObjects[i].update(secondsPassed);
     }
 
     if(this.fallingObjects.length <= 1 && this.detectRect(this.fallingObjects[0], this.pedestal)){
@@ -170,7 +195,9 @@ class Game{
   draw(){
     this.clear();
     this.pedestal.draw();
+    //this.cutObject.draw();
     this.fallingObjects.forEach((fallingObject) => fallingObject.draw());
+    this.cutObjects.forEach((fallingObject) => fallingObject.draw());
     this.ui.updateGameInfo(this.score, this.time);
   }
 
@@ -180,9 +207,20 @@ class Game{
     }
 
     this.fallingObjects.push(new FallObject(this.context, this.xStartBox * 2, 0,
-      this.widthBlock, this.widthPerColumn, 100 * this.bounusSpeed, 500, 10))
+      this.widthBlock, this.widthPerColumn, 100 * this.bounusSpeed, 500, 10));
     
     this.spawner = false;
+  }
+
+  spawnCutObj(){    
+    if(!this.isDisplayCutBox){
+      return;
+    }
+
+    this.cutObjects.push(new CutObject(this.context, this.xCutObj, this.yCutObj, this.widthCutObj,
+      this.heightCutObj, 0, 500));
+
+    this.isDisplayCutBox = false;
   }
 
   clear(){
@@ -206,5 +244,15 @@ class Game{
     }
     obj1.width = obj2.width - dist;
     this.widthBlock = obj1.width;
+
+    this.widthCutObj = dist;
+    this.yCutObj = obj1.y
+    this.isDisplayCutBox = true;
+    if(obj1.x > obj2.x){
+      this.xCutObj = obj1.x + obj1.width + 5;
+    }else{
+      this.xCutObj = obj1.x - dist - 5;
+    }
+    
   }
 }
